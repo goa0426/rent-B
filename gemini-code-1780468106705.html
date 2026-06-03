@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>末端租金精準估算與實戰練習室</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 新增：遮罩樣式 */
+        #login-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #0f172a; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
+
+    <div id="login-overlay">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center">
+            <h2 class="text-xl font-bold mb-4">請輸入進入密碼</h2>
+            <input type="password" id="password-input" class="w-full border border-slate-300 rounded-xl px-4 py-3 mb-4 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="輸入密碼">
+            <button onclick="checkPassword()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition">進入工具</button>
+        </div>
+    </div>
+
+    <div id="main-content" style="display:none;" class="container mx-auto px-4 py-8 max-w-4xl">
+        
+        <div class="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">🏠 末端租金精準估算與實戰練習室</h1>
+            <button onclick="logout()" class="text-sm bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3 py-1.5 rounded-lg transition">登出</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h2 class="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2">
+                    <span class="p-1 bg-emerald-100 text-emerald-700 rounded-lg text-sm">📝</span> 租金估算參數輸入
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">案件名稱 / 地址</label>
+                        <input type="text" id="case-name" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="例如：文山區套房 A 案">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">預估坪數 (坪)</label>
+                            <input type="number" id="case-size" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="0" oninput="calculateRent()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">區域每坪行情 (元)</label>
+                            <input type="number" id="price-per-ping" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="0" oninput="calculateRent()">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">硬體加權調整 (元)</label>
+                            <input type="number" id="hardware-bonus" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="如：全新裝潢 +2000" value="0" oninput="calculateRent()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">扣減係數 (元)</label>
+                            <input type="number" id="deduction-minus" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="如：無電梯頂加 -15
