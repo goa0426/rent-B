@@ -1,656 +1,663 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>末端租金精準估算與實戰練習室 - 包租代管實戰指南</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Noto Sans TC', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            200: '#bbf7d0',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            800: '#065f46',
-                            900: '#064e3b',
-                        },
-                        navy: {
-                            50: '#f8fafc',
-                            100: '#f1f5f9',
-                            800: '#1e293b',
-                            900: '#0f172a',
-                            950: '#020617',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .grid-bg {
-            background-size: 20px 20px;
-            background-image: linear-gradient(to right, rgba(148, 163, 184, 0.15) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(148, 163, 184, 0.15) 1px, transparent 1px);
-        }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        /* 密碼遮罩樣式 */
-        #login-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #0f172a; }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-brand-100 selection:text-brand-800">
+{\rtf1\ansi\ansicpg950\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-    <div id="login-overlay">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center">
-            <h2 class="text-xl font-bold mb-4">請輸入進入密碼</h2>
-            <input type="password" id="password-input" class="w-full border border-slate-300 rounded-xl px-4 py-3 mb-4 focus:ring-2 focus:ring-emerald-500 outline-none text-center" placeholder="輸入密碼">
-            <button onclick="checkPassword()" class="w-full bg-emerald-600 text-white font-bold py-5 mt-4 rounded-xl hover:bg-emerald-700 transition" style="min-height: 50px; cursor: pointer;">進入工具</button>
-        </div>
-    </div>
-
-    <div id="main-content" style="display:none;" class="flex-grow w-full flex flex-col">
-        <header class="bg-gradient-to-r from-navy-950 via-brand-900 to-navy-900 text-white py-10 px-6 shadow-xl relative overflow-hidden">
-            <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]"></div>
-            <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 text-brand-200 text-xs font-semibold mb-3 border border-brand-500/30">
-                        <i class="fa-solid fa-calculator animate-pulse"></i> 實戰開發工具系列 · 租金定價篇
-                    </div>
-                    <h1 class="text-3xl md:text-5xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-brand-200">
-                        末端租金精準估算與實戰練習室
-                    </h1>
-                    <p class="text-slate-300 text-sm md:text-base mt-3 font-light max-w-2xl leading-relaxed">
-                        「末端租金 - 成本租金 = 純利潤空間」。精設定價，避免空置與利潤流失。活用床比例尺與 25 公分腳步法，看透房間真正潛力！
-                    </p>
-                </div>
-                <div class="bg-white/5 backdrop-blur-md p-4 rounded-2xl border border-white/10 text-left md:text-right max-w-xs w-full">
-                    <span class="text-xs text-brand-300 block font-semibold tracking-wider"><i class="fa-solid fa-quote-left mr-1"></i> 講師核心金句</span>
-                    <span class="text-slate-100 font-medium text-sm mt-1 block">「租太高拖慢招租，租太低侵蝕收益！」</span>
-                </div>
-            </div>
-        </header>
-
-        <main class="max-w-7xl mx-auto px-4 md:px-6 py-8 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <div class="lg:col-span-7 space-y-6">
-                <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 transition duration-300 hover:shadow-md">
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-600 shadow-sm">
-                                <i class="fa-solid fa-expand text-xl"></i>
-                            </div>
-                            <div>
-                                <h2 class="text-lg md:text-xl font-bold text-slate-800">第一步：丈量空間大小</h2>
-                                <p class="text-xs text-slate-400">拉動滑桿或手動輸入長寬，系統會自動轉換級距</p>
-                            </div>
-                        </div>
-                        <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">台北蛋黃區基準</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div class="space-y-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-100/80">
-                            <div class="flex justify-between items-center">
-                                <label class="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                    <span class="w-1.5 h-3 bg-brand-500 rounded"></span> 房間長度 (公分)
-                                </label>
-                                <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded" id="length-val">300 cm</span>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <input type="range" id="input-length" min="150" max="600" value="300" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
-                                <input type="number" id="num-length" value="300" min="150" max="600" class="w-20 px-3 py-1.5 text-sm text-center border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-semibold text-slate-700">
-                            </div>
-                        </div>
-                        <div class="space-y-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-100/80">
-                            <div class="flex justify-between items-center">
-                                <label class="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                    <span class="w-1.5 h-3 bg-brand-500 rounded"></span> 房間寬度 (公分)
-                                </label>
-                                <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded" id="width-val">300 cm</span>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <input type="range" id="input-width" min="150" max="600" value="300" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
-                                <input type="number" id="num-width" value="300" min="150" max="600" class="w-20 px-3 py-1.5 text-sm text-center border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-semibold text-slate-700">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 bg-slate-900 text-white p-5 rounded-2xl shadow-sm mb-6 text-center">
-                        <div>
-                            <span class="text-[11px] text-slate-400 block mb-1">總面積 (長x寬)</span>
-                            <span class="text-sm md:text-lg font-black text-slate-100" id="total-area-cm">90,000 cm²</span>
-                        </div>
-                        <div>
-                            <span class="text-[11px] text-slate-400 block mb-1">折合坪數</span>
-                            <span class="text-sm md:text-lg font-black text-slate-100" id="total-ping">2.72 坪</span>
-                        </div>
-                        <div>
-                            <span class="text-[11px] text-slate-400 block mb-1">空間級距</span>
-                            <span id="size-badge" class="inline-block text-xs font-bold px-2.5 py-1 rounded-full mt-0.5">小房間</span>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-slate-100 pt-5">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-ruler-combined mr-1 text-slate-400"></i> 講師親傳：現場無工具估算法</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
-                                <i class="fa-solid fa-bed text-indigo-500 text-lg"></i>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-700">標準雙人床</p>
-                                    <p class="text-[11px] text-slate-500">150 × 188 公分</p>
-                                </div>
-                            </div>
-                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
-                                <i class="fa-solid fa-bed text-teal-500 text-lg"></i>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-700">標準單人床</p>
-                                    <p class="text-[11px] text-slate-500">105 × 188 公分</p>
-                                </div>
-                            </div>
-                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
-                                <i class="fa-solid fa-shoe-prints text-amber-500 text-lg animate-pulse"></i>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-700">藍太太腳步法</p>
-                                    <p class="text-[11px] text-slate-500">1 步 ≈ 25 公分</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 transition duration-300 hover:shadow-md">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 shadow-sm">
-                            <i class="fa-solid fa-sliders text-xl"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-lg md:text-xl font-bold text-slate-800">第二步：環境與附加加減價因子</h2>
-                            <p class="text-xs text-slate-400">勾選現場實際條件，由系統在基準價上作動態微調</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-6">
-                        <div>
-                            <h3 class="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                <i class="fa-solid fa-circle-plus text-sm"></i> 加價項 (正向加分)
-                            </h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer transition">
-                                    <input type="checkbox" id="mod-balcony" class="mt-1 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">
-                                    <div>
-                                        <span class="text-sm font-bold text-slate-800 block">獨立景觀陽台</span>
-                                        <span class="text-xs text-slate-400 mt-0.5 block">專屬戶外呼吸空間 <span class="text-emerald-600 font-semibold">+$500 ~ $1,000</span></span>
-                                    </div>
-                                </label>
-                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer transition">
-                                    <input type="checkbox" id="mod-elevator" class="mt-1 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">
-                                    <div>
-                                        <span class="text-sm font-bold text-slate-800 block">電梯大樓/華廈</span>
-                                        <span class="text-xs text-slate-400 mt-0.5 block">出入省力免爬樓梯 <span class="text-emerald-600 font-semibold">+$500 ~ $1,000</span></span>
-                                    </div>
-                                </label>
-                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer transition">
-                                    <input type="checkbox" id="mod-bath" class="mt-1 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">
-                                    <div>
-                                        <span class="text-sm font-bold text-slate-800 block">獨立衛浴 (套房型)</span>
-                                        <span class="text-xs text-slate-400 mt-0.5 block">超高指名度黃金抗跌 <span class="text-emerald-600 font-semibold">+$2,000 ~ $3,000</span></span>
-                                    </div>
-                                </label>
-                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer transition">
-                                    <input type="checkbox" id="mod-ratio" class="mt-1 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">
-                                    <div>
-                                        <span class="text-sm font-bold text-slate-800 block">超低雅房共用比 (≤ 2人)</span>
-                                        <span class="text-xs text-slate-400 mt-0.5 block">共用比極低的夢幻雅房 <span class="text-emerald-600 font-semibold">+$500</span></span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xs font-bold text-rose-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                <i class="fa-solid fa-circle-minus text-sm"></i> 減價項 (抗性扣分)
-                            </h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/20 cursor-pointer transition">
-                                    <input type="checkbox" id="mod-backbalcony" class="mt-1 rounded text-rose-600 focus:ring-rose-500 h-4 w-4">
-                                    <div>
-                                        <span class="text-sm font-bold text-slate-800 block">窗戶直對公用曬衣場</span>
-                                        <span class="text-xs text-slate-400 mt-0.5 block">隱私干擾與採光受阻 <span class="text-rose-600 font-semibold">-$500 ~ -$1,000</span></span>
-                                    </div>
-                                </label>
-                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/20 cursor-pointer transition">
-                                    <input type="checkbox" id="mod-poorview" class="mt-1 rounded text-rose-600 focus:ring-rose-500 h-4 w-4">
-                                    <div>
-                                        <span class="text-sm font-bold text-slate-800 block">面暗巷/臨棟棟距太近</span>
-                                        <span class="text-xs text-slate-400 mt-0.5 block">採光極差且有面壁壓迫 <span class="text-rose-600 font-semibold">-$500 ~ -$1,000</span></span>
-                                    </div>
-                                </label>
-                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/20 cursor-pointer transition">
-                                    <input type="checkbox" id="mod-internalwindow" class="mt-1 rounded text-rose-600 focus:ring-rose-500 h-4 w-4">
-                                    <div>
-                                        <span class="text-sm font-bold text-slate-800 block">對內窗/走道氣窗</span>
-                                        <span class="text-xs text-slate-400 mt-0.5 block">無直接對外採光通風 <span class="text-rose-600 font-semibold">-$1,500 ~ -$2,000</span></span>
-                                    </div>
-                                </label>
-                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/20 cursor-pointer transition">
-                                    <input type="checkbox" id="mod-walkup" class="mt-1 rounded text-rose-600 focus:ring-rose-500 h-4 w-4">
-                                    <div>
-                                        <span class="text-sm font-bold text-slate-800 block">無電梯公寓 (5樓及以上)</span>
-                                        <span class="text-xs text-slate-400 mt-0.5 block">爬樓負擔重，白領易卻步 <span class="text-rose-600 font-semibold">-$1,000 ~ -$1,500</span></span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-5 space-y-6">
-                <div class="bg-gradient-to-br from-navy-900 via-slate-900 to-navy-950 text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden transition-all duration-300 hover:shadow-2xl">
-                    <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:12px_12px]"></div>
-                    <div class="relative z-10 space-y-4">
-                        <span class="text-xs font-bold uppercase tracking-widest text-brand-400"><i class="fa-solid fa-wand-magic-sparkles mr-1 animate-bounce"></i> 末端租金動態試算</span>
-                        <div class="flex justify-between items-baseline border-b border-white/10 pb-4">
-                            <span class="text-slate-400 text-sm">建議招租價格帶</span>
-                            <div class="text-right">
-                                <span class="text-3xl md:text-4xl font-black text-brand-400 drop-shadow-sm" id="final-rent-range">NT$ 12,800 ~ 13,800</span>
-                                <span class="text-xs text-slate-400 block mt-1">/ 月 (台北蛋黃基準)</span>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-2.5 text-xs">
-                            <div class="flex justify-between text-slate-300">
-                                <span>基礎級距原始定價：</span>
-                                <span id="breakdown-base" class="font-bold">NT$ 12,800</span>
-                            </div>
-                            <div class="flex justify-between text-emerald-400">
-                                <span>環境優勢加分合計：</span>
-                                <span id="breakdown-adds" class="font-bold">+NT$ 0</span>
-                            </div>
-                            <div class="flex justify-between text-rose-400">
-                                <span>抗性抗拒減分合計：</span>
-                                <span id="breakdown-subs" class="font-bold">-NT$ 0</span>
-                            </div>
-                            <div class="flex justify-between border-t border-white/5 pt-2.5 text-slate-400">
-                                <span>特大頂級套房溢價：</span>
-                                <span id="breakdown-suite" class="font-bold text-brand-400">無</span>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-brand-500/10 border border-brand-500/20 p-4 rounded-2xl text-[11px] text-brand-200 leading-relaxed">
-                            <i class="fa-solid fa-circle-info mr-1"></i>
-                            <strong>台北蛋黃區基準：</strong> 指大安、信義、松山、中正、中山等精華區，若在外圍區（例如內湖、南港、新北精華區），建議將最終租金下調約 10% ~ 20% 作為安全招租帶。
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 transition duration-300 hover:shadow-md">
-                    <div class="flex border-b border-slate-100 mb-6">
-                        <button id="tab-btn-visual" class="flex-1 pb-3 text-sm font-bold text-brand-600 border-b-2 border-brand-600 focus:outline-none transition">
-                            <i class="fa-solid fa-cube mr-1.5"></i> 比例尺擬真畫布
-                        </button>
-                        <button id="tab-btn-quiz" class="flex-1 pb-3 text-sm font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent focus:outline-none transition">
-                            <i class="fa-solid fa-graduation-cap mr-1.5"></i> 實戰小功課
-                        </button>
-                    </div>
-
-                    <div id="tab-visual" class="space-y-4">
-                        <div class="text-xs text-slate-500 leading-relaxed flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <span>💡 背景灰色網格每格代表講師 <strong>1 步 (25 公分)</strong></span>
-                            <span class="text-brand-600 font-bold"><i class="fa-regular fa-hand-point-up animate-bounce mr-0.5"></i> 床組可自由拖曳！</span>
-                        </div>
-                        
-                        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-inner relative bg-slate-50 p-4">
-                            <div class="flex justify-between text-[10px] text-slate-400 mb-2">
-                                <span>比例尺：1格 = 25×25 cm</span>
-                                <span id="canvas-info">雙人與單人床示意 (可拖曳擺放)</span>
-                            </div>
-                            
-                            <div class="relative w-full h-72 bg-slate-100 rounded-xl grid-bg overflow-hidden flex items-center justify-center border border-slate-200" id="canvas-container">
-                                <div id="canvas-room" class="absolute border-4 border-yellow-400 bg-yellow-400/10 rounded-lg transition-all duration-300 flex flex-col items-center justify-center text-center shadow-sm pointer-events-none" style="width: 150px; height: 150px;">
-                                    <span class="text-[10px] font-black text-yellow-800 bg-white/90 px-2 py-1 rounded shadow-sm" id="canvas-room-label">
-                                        300×300 cm
-                                    </span>
-                                </div>
-                                
-                                <div id="canvas-doublebed" class="absolute bg-indigo-500/20 border-2 border-indigo-500 rounded text-indigo-700 text-[10px] font-bold flex flex-col items-center justify-center cursor-move shadow-md select-none touch-none" style="width: 75px; height: 94px; top: 10px; left: 10px; z-index: 10;">
-                                    <i class="fa-solid fa-bed text-sm mb-1 pointer-events-none"></i>
-                                    <span class="pointer-events-none">雙人床</span>
-                                    <span class="text-[8px] opacity-75 pointer-events-none">150×188</span>
-                                </div>
-                                
-                                <div id="canvas-singlebed" class="absolute bg-teal-500/20 border-2 border-teal-500 rounded text-teal-700 text-[10px] font-bold flex flex-col items-center justify-center cursor-move shadow-md select-none touch-none" style="width: 52.5px; height: 94px; bottom: 10px; right: 10px; z-index: 10;">
-                                    <i class="fa-solid fa-bed text-xs mb-1 pointer-events-none"></i>
-                                    <span class="pointer-events-none">單人床</span>
-                                    <span class="text-[8px] opacity-75 pointer-events-none">105×188</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="tab-quiz" class="space-y-4 hidden">
-                        <p class="text-xs text-slate-500 leading-relaxed bg-brand-50 p-3 rounded-xl border border-brand-100 text-brand-800">
-                            <i class="fa-solid fa-circle-question mr-1"></i>
-                            講師挑選了 3 個看房現場的真實個案，請運用所學的估算邏輯完成「末端租金評估大挑戰」吧！
-                        </p>
-                        <div class="border border-slate-100 bg-slate-50/50 p-4 rounded-2xl relative" id="quiz-card">
-                            <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">
-                                <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2.5 py-1 rounded-full" id="quiz-case-title">個案 A：信義區電梯大樓</span>
-                                <span class="text-xs font-bold text-slate-400" id="quiz-index">1 / 3</span>
-                            </div>
-                            <div class="space-y-2 mb-4">
-                                <p class="text-sm font-bold text-slate-800 leading-relaxed" id="quiz-desc">
-                                    長寬大約 350×400 cm，有面後巷近距離的採光抗性，大樓附有電梯。這間房間應定位為？
-                                </p>
-                                <div class="flex gap-2 flex-wrap" id="quiz-tags"></div>
-                            </div>
-                            <div class="space-y-2.5" id="quiz-options"></div>
-                            <div id="quiz-feedback" class="mt-4 p-4 rounded-2xl text-xs leading-relaxed hidden shadow-sm transition-all duration-300"></div>
-                        </div>
-                        <div class="flex justify-end pt-2">
-                            <button id="quiz-next-btn" class="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 shadow" disabled>
-                                <span>下一題</span> <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <footer class="bg-slate-900 text-slate-400 py-6 px-6 border-t border-slate-800 text-center text-xs mt-12">
-            <div class="max-w-7xl mx-auto space-y-2">
-                <p>《選房成功的關鍵因素》課程工具系列 · 所有心法源於講師 藍太太 (Ruby) 洪怡芳老師共享版權所有</p>
-                <p class="text-slate-600">本網頁由 AI 輔助優化設計，旨在提供合規的包租代管實務、選房、看房及租金精準評估教學用途。</p>
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        // --- 登入邏輯 ---
-        const secret = "1234"; // 預設密碼 1234
-        function checkPassword() {
-            const pass = document.getElementById('password-input').value;
-            if (pass === secret || pass === "1234") {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-                localStorage.setItem('isLoggedIn', 'true');
-                // 登入後重繪 Canvas 尺寸
-                calculateRent();
-            } else {
-                alert('密碼錯誤');
-            }
-        }
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-        }
-
-        // --- 估算器與畫布邏輯 ---
-        const lengthInput = document.getElementById('input-length');
-        const widthInput = document.getElementById('input-width');
-        const numLength = document.getElementById('num-length');
-        const numWidth = document.getElementById('num-width');
-        const lengthValText = document.getElementById('length-val');
-        const widthValText = document.getElementById('width-val');
-        const totalAreaCmText = document.getElementById('total-area-cm');
-        const totalPingText = document.getElementById('total-ping');
-        const sizeBadge = document.getElementById('size-badge');
-        
-        const modBalcony = document.getElementById('mod-balcony');
-        const modElevator = document.getElementById('mod-elevator');
-        const modBath = document.getElementById('mod-bath');
-        const modRatio = document.getElementById('mod-ratio');
-        const modBackBalcony = document.getElementById('mod-backbalcony');
-        const modPoorView = document.getElementById('mod-poorview');
-        const modInternalWindow = document.getElementById('mod-internalwindow');
-        const modWalkup = document.getElementById('mod-walkup');
-        
-        const finalRentRangeText = document.getElementById('final-rent-range');
-        const breakdownBaseText = document.getElementById('breakdown-base');
-        const breakdownAddsText = document.getElementById('breakdown-adds');
-        const breakdownSubsText = document.getElementById('breakdown-subs');
-        const breakdownSuiteText = document.getElementById('breakdown-suite');
-        
-        const canvasRoom = document.getElementById('canvas-room');
-        const canvasRoomLabel = document.getElementById('canvas-room-label');
-        const canvasContainer = document.getElementById('canvas-container');
-        
-        function calculateRent() {
-            const length = parseFloat(lengthInput.value) || 0;
-            const width = parseFloat(widthInput.value) || 0;
-            const areaCm2 = length * width;
-            const pings = (areaCm2 / 33057.85).toFixed(2);
-            
-            totalAreaCmText.textContent = `${areaCm2.toLocaleString()} cm²`;
-            totalPingText.textContent = `${pings} 坪`;
-            
-            let basePrice = 12800;
-            let sizeCategory = '小房間';
-            sizeBadge.className = 'inline-block text-xs font-bold px-2.5 py-1 rounded-full mt-0.5';
-            
-            if (areaCm2 < 100000) { 
-                basePrice = 12800;
-                sizeCategory = '小房間';
-                sizeBadge.classList.add('bg-blue-100', 'text-blue-700');
-            } else if (areaCm2 >= 100000 && areaCm2 < 140000) {
-                basePrice = 13800;
-                sizeCategory = '中房間';
-                sizeBadge.classList.add('bg-teal-100', 'text-teal-700');
-            } else { 
-                basePrice = 14800;
-                sizeCategory = '大房間';
-                sizeBadge.classList.add('bg-emerald-100', 'text-emerald-700');
-            }
-            sizeBadge.textContent = sizeCategory;
-            breakdownBaseText.textContent = `NT$ ${basePrice.toLocaleString()}`;
-            
-            let positiveAdds = 0;
-            if (modBalcony.checked) positiveAdds += 800;       
-            if (modElevator.checked) positiveAdds += 800;      
-            if (modBath.checked) positiveAdds += 2500;         
-            if (modRatio.checked) positiveAdds += 500;         
-            breakdownAddsText.textContent = `+NT$ ${positiveAdds.toLocaleString()}`;
-            
-            let negativeSubs = 0;
-            if (modBackBalcony.checked) negativeSubs += 800;    
-            if (modPoorView.checked) negativeSubs += 800;        
-            if (modInternalWindow.checked) negativeSubs += 1800; 
-            if (modWalkup.checked) negativeSubs += 1200;         
-            breakdownSubsText.textContent = `-NT$ ${negativeSubs.toLocaleString()}`;
-            
-            let isSuiteBig = false;
-            if (modBath.checked && sizeCategory === '大房間') {
-                isSuiteBig = true;
-                breakdownSuiteText.textContent = '符合 (16,800 元以上)';
-                breakdownSuiteText.className = 'font-bold text-brand-500';
-            } else {
-                breakdownSuiteText.textContent = '無';
-                breakdownSuiteText.className = 'font-bold text-slate-400';
-            }
-            
-            let finalLower = basePrice + positiveAdds - negativeSubs;
-            let finalUpper = finalLower + 1000;
-            
-            if (isSuiteBig && finalLower < 16800) {
-                finalLower = 16800;
-                finalUpper = 17800;
-            }
-            if (finalLower < 5000) finalLower = 5000;
-            if (finalUpper < 6000) finalUpper = 6000;
-            
-            finalRentRangeText.textContent = `NT$ ${finalLower.toLocaleString()} ~ ${finalUpper.toLocaleString()}`;
-            updateCanvasDimensions(length, width);
-        }
-        
-        function updateCanvasDimensions(length, width) {
-            if(!canvasContainer) return;
-            const maxCm = 600; 
-            const containerWidth = canvasContainer.clientWidth - 40; 
-            const containerHeight = canvasContainer.clientHeight - 40;
-            if(containerWidth <= 0) return; // Prevent zero division when hidden
-            
-            const scaleX = containerWidth / maxCm;
-            const scaleY = containerHeight / maxCm;
-            const scale = Math.min(scaleX, scaleY);
-            
-            canvasRoom.style.width = `${width * scale}px`;
-            canvasRoom.style.height = `${length * scale}px`;
-            canvasRoomLabel.innerHTML = `${width}×${length} cm<br><span class="text-[8px] font-medium text-slate-500">(${ ( (length*width) / 33057.85 ).toFixed(2) } 坪)</span>`;
-            
-            document.getElementById('canvas-doublebed').style.width = `${150 * scale}px`;
-            document.getElementById('canvas-doublebed').style.height = `${188 * scale}px`;
-            document.getElementById('canvas-singlebed').style.width = `${105 * scale}px`;
-            document.getElementById('canvas-singlebed').style.height = `${188 * scale}px`;
-        }
-        
-        function syncInputs(e) {
-            const val = e.target.value;
-            if (e.target.id === 'input-length' || e.target.id === 'num-length') {
-                lengthInput.value = val;
-                numLength.value = val;
-                lengthValText.textContent = `${val} cm`;
-            } else if (e.target.id === 'input-width' || e.target.id === 'num-width') {
-                widthInput.value = val;
-                numWidth.value = val;
-                widthValText.textContent = `${val} cm`;
-            }
-            calculateRent();
-        }
-        
-        [lengthInput, widthInput, numLength, numWidth].forEach(el => { el.addEventListener('input', syncInputs); });
-        [modBalcony, modElevator, modBath, modRatio, modBackBalcony, modPoorView, modInternalWindow, modWalkup].forEach(chk => { chk.addEventListener('change', calculateRent); });
-        
-        const tabBtnVisual = document.getElementById('tab-btn-visual');
-        const tabBtnQuiz = document.getElementById('tab-btn-quiz');
-        const tabVisual = document.getElementById('tab-visual');
-        const tabQuiz = document.getElementById('tab-quiz');
-        
-        tabBtnVisual.addEventListener('click', () => {
-            tabBtnVisual.className = 'flex-1 pb-3 text-sm font-bold text-brand-600 border-b-2 border-brand-600 focus:outline-none transition';
-            tabBtnQuiz.className = 'flex-1 pb-3 text-sm font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent focus:outline-none transition';
-            tabVisual.classList.remove('hidden');
-            tabQuiz.classList.add('hidden');
-            calculateRent(); // Recalculate to fix layout
-        });
-        
-        tabBtnQuiz.addEventListener('click', () => {
-            tabBtnQuiz.className = 'flex-1 pb-3 text-sm font-bold text-brand-600 border-b-2 border-brand-600 focus:outline-none transition';
-            tabBtnVisual.className = 'flex-1 pb-3 text-sm font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent focus:outline-none transition';
-            tabQuiz.classList.remove('hidden');
-            tabVisual.classList.add('hidden');
-        });
-        
-        function initDraggable(el) {
-            let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-            el.addEventListener("mousedown", dragStart, false);
-            document.addEventListener("mouseup", dragEnd, false);
-            document.addEventListener("mousemove", drag, false);
-            el.addEventListener("touchstart", dragStart, {passive: false});
-            document.addEventListener("touchend", dragEnd, {passive: false});
-            document.addEventListener("touchmove", drag, {passive: false});
-            
-            function dragStart(e) {
-                if (e.type === "touchstart") { initialX = e.touches[0].clientX - xOffset; initialY = e.touches[0].clientY - yOffset; } 
-                else { initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; }
-                if (e.target === el) active = true;
-            }
-            function dragEnd() { initialX = currentX; initialY = currentY; active = false; }
-            function drag(e) {
-                if (active) {
-                    e.preventDefault();
-                    if (e.type === "touchmove") { currentX = e.touches[0].clientX - initialX; currentY = e.touches[0].clientY - initialY; } 
-                    else { currentX = e.clientX - initialX; currentY = e.clientY - initialY; }
-                    xOffset = currentX; yOffset = currentY;
-                    el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-                }
-            }
-        }
-        initDraggable(document.getElementById('canvas-doublebed'));
-        initDraggable(document.getElementById('canvas-singlebed'));
-        
-        // Quiz Data
-        const quizDatabase = [
-            { caseTitle: "個案 A：信義區電梯大樓 (大房間)", desc: "長寬大約 350×400 cm，有面後巷近距離的採光抗性，大樓附有電梯。這間房間應定位為？", options: ["大房基準 $14,800 + 電梯加價 800 - 採光抗性 800 = 14,800 元", "大房基準 $14,800 + 電梯加價 800 - 採光抗性 1,800 = 13,800 元", "大房直接打八折，不考慮電梯等加分項，直接租 11,800 元"], correctIdx: 0, tags: ["約 4.2 坪 (大房間)", "有電梯 (+$800)", "鄰棟近/採光差 (-$800)"], explanation: "答案選 (1)。大房基準 $14,800。電梯(+$800)，採光差(-$800)互為抵消，末端租金維持在 $14,800 左右。" },
-            { caseTitle: "個案 B：中山區老公寓4樓 (中房間)", desc: "房間長寬約 300×420 cm，無電梯的實體4樓。無陽台、對外採光普通。如何定價？", options: ["中房基準 $13,800，因沒有大缺點，因此可以強設定在 13,800 元", "中房基準 $13,800，爬4樓非極限，略微折價定在 13,300 ~ 13,800 元", "中房基準 $13,800，高樓層公寓直接扣除 20% 行情定在 11,000 元"], correctIdx: 1, tags: ["約 3.8 坪 (中房間)", "無陽台電梯", "4樓公寓梯間乾淨"], explanation: "答案選 (2)。中房型基準 $13,800。4樓略微折減約 500 元即可，定價在 $13,300 ~ 13,800 之間最佳。" },
-            { caseTitle: "個案 C：大安區頂級大套房 (超大空間)", desc: "長寬 400×400 cm，內含獨立全套衛浴、且擁有大電梯與採光極佳的獨立景觀陽台。", options: ["大房基準 $14,800 + 衛浴 2,500 + 電梯 800 + 陽台 800 = 18,900 元", "大房基準 $14,800 + 陽台 500 = 15,300 元 左右，衛浴無法拉高定價", "無論大小，共生公寓的最高天花板定價皆不應超過 14,800 元"], correctIdx: 0, tags: ["約 4.8 坪 (大房間)", "獨立衛浴 (+$2,500)", "電梯華廈 (+$800)", "獨立陽台 (+$800)"], explanation: "答案選 (1)。附獨立衛浴可增加 $2,500 溢價，融合陽台與電梯，在精華區完全可以挑戰 $18,900 的月租！" }
-        ];
-        
-        let activeQuizIdx = 0, isQuestionAnswered = false;
-        const quizCaseTitle = document.getElementById('quiz-case-title'), quizIndex = document.getElementById('quiz-index'), quizDesc = document.getElementById('quiz-desc'), quizOptions = document.getElementById('quiz-options'), quizFeedback = document.getElementById('quiz-feedback'), quizNextBtn = document.getElementById('quiz-next-btn'), quizTags = document.getElementById('quiz-tags');
-        
-        function renderQuiz() {
-            const data = quizDatabase[activeQuizIdx];
-            quizCaseTitle.textContent = data.caseTitle; quizIndex.textContent = `${activeQuizIdx + 1} / ${quizDatabase.length}`; quizDesc.textContent = data.desc;
-            quizTags.innerHTML = '';
-            data.tags.forEach(tag => {
-                const isNegative = tag.includes('-') || tag.includes('差');
-                const badge = document.createElement('span');
-                badge.className = `border px-2.5 py-1 rounded-lg text-[10px] font-semibold ${isNegative ? 'bg-rose-50 border-rose-100 text-rose-500' : 'bg-slate-50 border-slate-200 text-slate-600'}`;
-                badge.innerHTML = tag; quizTags.appendChild(badge);
-            });
-            quizOptions.innerHTML = '';
-            data.options.forEach((opt, idx) => {
-                const optBtn = document.createElement('button');
-                optBtn.className = "w-full text-left p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-brand-500 hover:bg-brand-50/20 text-xs font-semibold text-slate-700 transition flex justify-between items-center group shadow-sm";
-                optBtn.innerHTML = `<span>${opt}</span><i class="fa-solid fa-circle-chevron-right text-slate-300 group-hover:text-brand-500 transition"></i>`;
-                optBtn.onclick = () => selectQuizAnswer(idx); quizOptions.appendChild(optBtn);
-            });
-            quizFeedback.classList.add('hidden'); quizNextBtn.disabled = true; isQuestionAnswered = false;
-        }
-        
-        function selectQuizAnswer(selectedIdx) {
-            if (isQuestionAnswered) return;
-            isQuestionAnswered = true;
-            const data = quizDatabase[activeQuizIdx], buttons = quizOptions.querySelectorAll('button');
-            buttons.forEach((btn, idx) => {
-                btn.disabled = true;
-                if (idx === data.correctIdx) {
-                    btn.className = "w-full text-left p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-500 text-xs font-bold text-emerald-800 transition flex justify-between items-center shadow-inner";
-                    btn.innerHTML = `<span>${data.options[idx]}</span><i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i>`;
-                } else if (idx === selectedIdx) {
-                    btn.className = "w-full text-left p-3.5 rounded-2xl bg-rose-50 border-2 border-rose-500 text-xs font-bold text-rose-800 transition flex justify-between items-center shadow-inner";
-                    btn.innerHTML = `<span>${data.options[idx]}</span><i class="fa-solid fa-circle-xmark text-rose-600 text-lg"></i>`;
-                } else {
-                    btn.className = "w-full text-left p-3.5 rounded-2xl bg-slate-100 border border-slate-200 text-xs text-slate-400 cursor-not-allowed transition flex justify-between items-center";
-                    btn.innerHTML = `<span>${data.options[idx]}</span>`;
-                }
-            });
-            quizFeedback.classList.remove('hidden');
-            if (selectedIdx === data.correctIdx) {
-                quizFeedback.className = "mt-4 p-4 rounded-2xl text-xs leading-relaxed bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-sm";
-                quizFeedback.innerHTML = `<strong>太強了！完全正確！</strong><br>${data.explanation}`;
-            } else {
-                quizFeedback.className = "mt-4 p-4 rounded-2xl text-xs leading-relaxed bg-amber-50 border border-amber-200 text-amber-800 shadow-sm";
-                quizFeedback.innerHTML = `<strong>哎呀，答案有些微差距！</strong><br>${data.explanation}`;
-            }
-            quizNextBtn.disabled = false;
-        }
-        
-        quizNextBtn.addEventListener('click', () => {
-            activeQuizIdx++;
-            if (activeQuizIdx < quizDatabase.length) { renderQuiz(); } else {
-                quizCaseTitle.textContent = "🎉 恭喜完成實戰挑戰！"; quizIndex.textContent = "✓ 完修"; quizTags.innerHTML = '';
-                quizDesc.innerHTML = `<div class="text-center py-6"><p class="text-sm font-bold text-slate-700 leading-relaxed">✅ 掌握現場快速丈量<br>✅ 掌握基礎行情公式<br>✅ 掌握加價與折減心法</p></div>`;
-                quizOptions.innerHTML = ''; quizFeedback.classList.add('hidden');
-                quizNextBtn.textContent = "重新開始 🔄";
-                quizNextBtn.onclick = () => { activeQuizIdx = 0; quizNextBtn.textContent = "下一題"; quizNextBtn.onclick = null; renderQuiz(); };
-            }
-        });
-        
-        window.onload = function() { calculateRent(); renderQuiz(); window.addEventListener('resize', () => { calculateRent(); }); };
-    </script>
-</body>
-</html>
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="zh-TW">\
+<head>\
+    <meta charset="UTF-8">\
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
+    <title>\uc0\u26411 \u31471 \u31199 \u37329 \u31934 \u28310 \u20272 \u31639 \u33287 \u23526 \u25136 \u32244 \u32722 \u23460  - \u21253 \u31199 \u20195 \u31649 \u23526 \u25136 \u25351 \u21335 </title>\
+    <script src="https://cdn.tailwindcss.com"></script>\
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">\
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">\
+    \
+    <script>\
+        tailwind.config = \{\
+            theme: \{\
+                extend: \{\
+                    fontFamily: \{\
+                        sans: ['Noto Sans TC', 'sans-serif'],\
+                    \},\
+                    colors: \{\
+                        brand: \{\
+                            50: '#f0fdf4',\
+                            100: '#dcfce7',\
+                            200: '#bbf7d0',\
+                            500: '#10b981',\
+                            600: '#059669',\
+                            700: '#047857',\
+                            800: '#065f46',\
+                            900: '#064e3b',\
+                        \},\
+                        navy: \{\
+                            50: '#f8fafc',\
+                            100: '#f1f5f9',\
+                            800: '#1e293b',\
+                            900: '#0f172a',\
+                            950: '#020617',\
+                        \}\
+                    \}\
+                \}\
+            \}\
+        \}\
+    </script>\
+    <style>\
+        .grid-bg \{\
+            background-size: 20px 20px;\
+            background-image: linear-gradient(to right, rgba(148, 163, 184, 0.15) 1px, transparent 1px),\
+                              linear-gradient(to bottom, rgba(148, 163, 184, 0.15) 1px, transparent 1px);\
+        \}\
+        ::-webkit-scrollbar \{ width: 6px; \}\
+        ::-webkit-scrollbar-track \{ background: #f1f5f9; \}\
+        ::-webkit-scrollbar-thumb \{ background: #cbd5e1; border-radius: 4px; \}\
+        ::-webkit-scrollbar-thumb:hover \{ background: #94a3b8; \}\
+        /* \uc0\u23494 \u30908 \u36974 \u32617 \u27171 \u24335  */\
+        #login-overlay \{ position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #0f172a; \}\
+    </style>\
+</head>\
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-brand-100 selection:text-brand-800">\
+\
+    <div id="login-overlay">\
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center">\
+            <h2 class="text-xl font-bold mb-4">\uc0\u35531 \u36664 \u20837 \u36914 \u20837 \u23494 \u30908 </h2>\
+            <input type="password" id="password-input" class="w-full border border-slate-300 rounded-xl px-4 py-3 mb-4 focus:ring-2 focus:ring-emerald-500 outline-none text-center" placeholder="\uc0\u36664 \u20837 \u23494 \u30908 ">\
+            <button onclick="checkPassword()" class="w-full bg-emerald-600 text-white font-bold py-5 mt-4 rounded-xl hover:bg-emerald-700 transition" style="min-height: 50px; cursor: pointer;">\uc0\u36914 \u20837 \u24037 \u20855 </button>\
+        </div>\
+    </div>\
+\
+    <div id="main-content" style="display:none;" class="flex-grow w-full flex flex-col">\
+        <header class="bg-gradient-to-r from-navy-950 via-brand-900 to-navy-900 text-white py-10 px-6 shadow-xl relative overflow-hidden">\
+            <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]"></div>\
+            <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">\
+                <div>\
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 text-brand-200 text-xs font-semibold mb-3 border border-brand-500/30">\
+                        <i class="fa-solid fa-calculator animate-pulse"></i> \uc0\u23526 \u25136 \u38283 \u30332 \u24037 \u20855 \u31995 \u21015  \'b7 \u31199 \u37329 \u23450 \u20729 \u31687 \
+                    </div>\
+                    <h1 class="text-3xl md:text-5xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-brand-200">\
+                        \uc0\u26411 \u31471 \u31199 \u37329 \u31934 \u28310 \u20272 \u31639 \u33287 \u23526 \u25136 \u32244 \u32722 \u23460 \
+                    </h1>\
+                    <p class="text-slate-300 text-sm md:text-base mt-3 font-light max-w-2xl leading-relaxed">\
+                        \uc0\u12300 \u26411 \u31471 \u31199 \u37329  - \u25104 \u26412 \u31199 \u37329  = \u32020 \u21033 \u28516 \u31354 \u38291 \u12301 \u12290 \u31934 \u35373 \u23450 \u20729 \u65292 \u36991 \u20813 \u31354 \u32622 \u33287 \u21033 \u28516 \u27969 \u22833 \u12290 \u27963 \u29992 \u24202 \u27604 \u20363 \u23610 \u33287  25 \u20844 \u20998 \u33139 \u27493 \u27861 \u65292 \u30475 \u36879 \u25151 \u38291 \u30495 \u27491 \u28507 \u21147 \u65281 \
+                    </p>\
+                </div>\
+                <div class="bg-white/5 backdrop-blur-md p-4 rounded-2xl border border-white/10 text-left md:text-right max-w-xs w-full">\
+                    <span class="text-xs text-brand-300 block font-semibold tracking-wider"><i class="fa-solid fa-quote-left mr-1"></i> \uc0\u35611 \u24107 \u26680 \u24515 \u37329 \u21477 </span>\
+                    <span class="text-slate-100 font-medium text-sm mt-1 block">\uc0\u12300 \u31199 \u22826 \u39640 \u25302 \u24930 \u25307 \u31199 \u65292 \u31199 \u22826 \u20302 \u20405 \u34645 \u25910 \u30410 \u65281 \u12301 </span>\
+                </div>\
+            </div>\
+        </header>\
+\
+        <main class="max-w-7xl mx-auto px-4 md:px-6 py-8 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-8">\
+            \
+            <div class="lg:col-span-7 space-y-6">\
+                <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 transition duration-300 hover:shadow-md">\
+                    <div class="flex justify-between items-center mb-6">\
+                        <div class="flex items-center gap-3">\
+                            <div class="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-600 shadow-sm">\
+                                <i class="fa-solid fa-expand text-xl"></i>\
+                            </div>\
+                            <div>\
+                                <h2 class="text-lg md:text-xl font-bold text-slate-800">\uc0\u31532 \u19968 \u27493 \u65306 \u19976 \u37327 \u31354 \u38291 \u22823 \u23567 </h2>\
+                                <p class="text-xs text-slate-400">\uc0\u25289 \u21205 \u28369 \u26751 \u25110 \u25163 \u21205 \u36664 \u20837 \u38263 \u23532 \u65292 \u31995 \u32113 \u26371 \u33258 \u21205 \u36681 \u25563 \u32026 \u36317 </p>\
+                            </div>\
+                        </div>\
+                        <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">\uc0\u21488 \u21271 \u34507 \u40643 \u21312 \u22522 \u28310 </span>\
+                    </div>\
+\
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">\
+                        <div class="space-y-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-100/80">\
+                            <div class="flex justify-between items-center">\
+                                <label class="text-sm font-bold text-slate-700 flex items-center gap-1.5">\
+                                    <span class="w-1.5 h-3 bg-brand-500 rounded"></span> \uc0\u25151 \u38291 \u38263 \u24230  (\u20844 \u20998 )\
+                                </label>\
+                                <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded" id="length-val">300 cm</span>\
+                            </div>\
+                            <div class="flex items-center gap-4">\
+                                <input type="range" id="input-length" min="150" max="600" value="300" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">\
+                                <input type="number" id="num-length" value="300" min="150" max="600" class="w-20 px-3 py-1.5 text-sm text-center border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-semibold text-slate-700">\
+                            </div>\
+                        </div>\
+                        <div class="space-y-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-100/80">\
+                            <div class="flex justify-between items-center">\
+                                <label class="text-sm font-bold text-slate-700 flex items-center gap-1.5">\
+                                    <span class="w-1.5 h-3 bg-brand-500 rounded"></span> \uc0\u25151 \u38291 \u23532 \u24230  (\u20844 \u20998 )\
+                                </label>\
+                                <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded" id="width-val">300 cm</span>\
+                            </div>\
+                            <div class="flex items-center gap-4">\
+                                <input type="range" id="input-width" min="150" max="600" value="300" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">\
+                                <input type="number" id="num-width" value="300" min="150" max="600" class="w-20 px-3 py-1.5 text-sm text-center border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-semibold text-slate-700">\
+                            </div>\
+                        </div>\
+                    </div>\
+\
+                    <div class="grid grid-cols-3 gap-4 bg-slate-900 text-white p-5 rounded-2xl shadow-sm mb-6 text-center">\
+                        <div>\
+                            <span class="text-[11px] text-slate-400 block mb-1">\uc0\u32317 \u38754 \u31309  (\u38263 x\u23532 )</span>\
+                            <span class="text-sm md:text-lg font-black text-slate-100" id="total-area-cm">90,000 cm\'b2</span>\
+                        </div>\
+                        <div>\
+                            <span class="text-[11px] text-slate-400 block mb-1">\uc0\u25240 \u21512 \u22378 \u25976 </span>\
+                            <span class="text-sm md:text-lg font-black text-slate-100" id="total-ping">2.72 \uc0\u22378 </span>\
+                        </div>\
+                        <div>\
+                            <span class="text-[11px] text-slate-400 block mb-1">\uc0\u31354 \u38291 \u32026 \u36317 </span>\
+                            <span id="size-badge" class="inline-block text-xs font-bold px-2.5 py-1 rounded-full mt-0.5">\uc0\u23567 \u25151 \u38291 </span>\
+                        </div>\
+                    </div>\
+\
+                    <div class="border-t border-slate-100 pt-5">\
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-ruler-combined mr-1 text-slate-400"></i> \uc0\u35611 \u24107 \u35242 \u20659 \u65306 \u29694 \u22580 \u28961 \u24037 \u20855 \u20272 \u31639 \u27861 </h3>\
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">\
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">\
+                                <i class="fa-solid fa-bed text-indigo-500 text-lg"></i>\
+                                <div>\
+                                    <p class="text-xs font-bold text-slate-700">\uc0\u27161 \u28310 \u38617 \u20154 \u24202 </p>\
+                                    <p class="text-[11px] text-slate-500">150 \'d7 188 \uc0\u20844 \u20998 </p>\
+                                </div>\
+                            </div>\
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">\
+                                <i class="fa-solid fa-bed text-teal-500 text-lg"></i>\
+                                <div>\
+                                    <p class="text-xs font-bold text-slate-700">\uc0\u27161 \u28310 \u21934 \u20154 \u24202 </p>\
+                                    <p class="text-[11px] text-slate-500">105 \'d7 188 \uc0\u20844 \u20998 </p>\
+                                </div>\
+                            </div>\
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">\
+                                <i class="fa-solid fa-shoe-prints text-amber-500 text-lg animate-pulse"></i>\
+                                <div>\
+                                    <p class="text-xs font-bold text-slate-700">\uc0\u34253 \u22826 \u22826 \u33139 \u27493 \u27861 </p>\
+                                    <p class="text-[11px] text-slate-500">1 \uc0\u27493  \u8776  25 \u20844 \u20998 </p>\
+                                </div>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+\
+                <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 transition duration-300 hover:shadow-md">\
+                    <div class="flex items-center gap-3 mb-6">\
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 shadow-sm">\
+                            <i class="fa-solid fa-sliders text-xl"></i>\
+                        </div>\
+                        <div>\
+                            <h2 class="text-lg md:text-xl font-bold text-slate-800">\uc0\u31532 \u20108 \u27493 \u65306 \u29872 \u22659 \u33287 \u38468 \u21152 \u21152 \u28187 \u20729 \u22240 \u23376 </h2>\
+                            <p class="text-xs text-slate-400">\uc0\u21246 \u36984 \u29694 \u22580 \u23526 \u38555 \u26781 \u20214 \u65292 \u30001 \u31995 \u32113 \u22312 \u22522 \u28310 \u20729 \u19978 \u20316 \u21205 \u24907 \u24494 \u35519 </p>\
+                        </div>\
+                    </div>\
+\
+                    <div class="space-y-6">\
+                        <div>\
+                            <h3 class="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">\
+                                <i class="fa-solid fa-circle-plus text-sm"></i> \uc0\u21152 \u20729 \u38917  (\u27491 \u21521 \u21152 \u20998 )\
+                            </h3>\
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">\
+                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer transition">\
+                                    <input type="checkbox" id="mod-balcony" class="mt-1 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">\
+                                    <div>\
+                                        <span class="text-sm font-bold text-slate-800 block">\uc0\u29544 \u31435 \u26223 \u35264 \u38525 \u21488 </span>\
+                                        <span class="text-xs text-slate-400 mt-0.5 block">\uc0\u23560 \u23660 \u25142 \u22806 \u21628 \u21560 \u31354 \u38291  <span class="text-emerald-600 font-semibold">+$500 ~ $1,000</span></span>\
+                                    </div>\
+                                </label>\
+                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer transition">\
+                                    <input type="checkbox" id="mod-elevator" class="mt-1 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">\
+                                    <div>\
+                                        <span class="text-sm font-bold text-slate-800 block">\uc0\u38651 \u26799 \u22823 \u27155 /\u33775 \u24264 </span>\
+                                        <span class="text-xs text-slate-400 mt-0.5 block">\uc0\u20986 \u20837 \u30465 \u21147 \u20813 \u29228 \u27155 \u26799  <span class="text-emerald-600 font-semibold">+$500 ~ $1,000</span></span>\
+                                    </div>\
+                                </label>\
+                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer transition">\
+                                    <input type="checkbox" id="mod-bath" class="mt-1 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">\
+                                    <div>\
+                                        <span class="text-sm font-bold text-slate-800 block">\uc0\u29544 \u31435 \u34907 \u28020  (\u22871 \u25151 \u22411 )</span>\
+                                        <span class="text-xs text-slate-400 mt-0.5 block">\uc0\u36229 \u39640 \u25351 \u21517 \u24230 \u40643 \u37329 \u25239 \u36300  <span class="text-emerald-600 font-semibold">+$2,000 ~ $3,000</span></span>\
+                                    </div>\
+                                </label>\
+                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer transition">\
+                                    <input type="checkbox" id="mod-ratio" class="mt-1 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">\
+                                    <div>\
+                                        <span class="text-sm font-bold text-slate-800 block">\uc0\u36229 \u20302 \u38597 \u25151 \u20849 \u29992 \u27604  (\u8804  2\u20154 )</span>\
+                                        <span class="text-xs text-slate-400 mt-0.5 block">\uc0\u20849 \u29992 \u27604 \u26997 \u20302 \u30340 \u22818 \u24187 \u38597 \u25151  <span class="text-emerald-600 font-semibold">+$500</span></span>\
+                                    </div>\
+                                </label>\
+                            </div>\
+                        </div>\
+\
+                        <div>\
+                            <h3 class="text-xs font-bold text-rose-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">\
+                                <i class="fa-solid fa-circle-minus text-sm"></i> \uc0\u28187 \u20729 \u38917  (\u25239 \u24615 \u25187 \u20998 )\
+                            </h3>\
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">\
+                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/20 cursor-pointer transition">\
+                                    <input type="checkbox" id="mod-backbalcony" class="mt-1 rounded text-rose-600 focus:ring-rose-500 h-4 w-4">\
+                                    <div>\
+                                        <span class="text-sm font-bold text-slate-800 block">\uc0\u31383 \u25142 \u30452 \u23565 \u20844 \u29992 \u26348 \u34915 \u22580 </span>\
+                                        <span class="text-xs text-slate-400 mt-0.5 block">\uc0\u38577 \u31169 \u24178 \u25854 \u33287 \u25505 \u20809 \u21463 \u38459  <span class="text-rose-600 font-semibold">-$500 ~ -$1,000</span></span>\
+                                    </div>\
+                                </label>\
+                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/20 cursor-pointer transition">\
+                                    <input type="checkbox" id="mod-poorview" class="mt-1 rounded text-rose-600 focus:ring-rose-500 h-4 w-4">\
+                                    <div>\
+                                        <span class="text-sm font-bold text-slate-800 block">\uc0\u38754 \u26263 \u24055 /\u33256 \u26847 \u26847 \u36317 \u22826 \u36817 </span>\
+                                        <span class="text-xs text-slate-400 mt-0.5 block">\uc0\u25505 \u20809 \u26997 \u24046 \u19988 \u26377 \u38754 \u22721 \u22739 \u36843  <span class="text-rose-600 font-semibold">-$500 ~ -$1,000</span></span>\
+                                    </div>\
+                                </label>\
+                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/20 cursor-pointer transition">\
+                                    <input type="checkbox" id="mod-internalwindow" class="mt-1 rounded text-rose-600 focus:ring-rose-500 h-4 w-4">\
+                                    <div>\
+                                        <span class="text-sm font-bold text-slate-800 block">\uc0\u23565 \u20839 \u31383 /\u36208 \u36947 \u27683 \u31383 </span>\
+                                        <span class="text-xs text-slate-400 mt-0.5 block">\uc0\u28961 \u30452 \u25509 \u23565 \u22806 \u25505 \u20809 \u36890 \u39080  <span class="text-rose-600 font-semibold">-$1,500 ~ -$2,000</span></span>\
+                                    </div>\
+                                </label>\
+                                <label class="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/20 cursor-pointer transition">\
+                                    <input type="checkbox" id="mod-walkup" class="mt-1 rounded text-rose-600 focus:ring-rose-500 h-4 w-4">\
+                                    <div>\
+                                        <span class="text-sm font-bold text-slate-800 block">\uc0\u28961 \u38651 \u26799 \u20844 \u23507  (5\u27155 \u21450 \u20197 \u19978 )</span>\
+                                        <span class="text-xs text-slate-400 mt-0.5 block">\uc0\u29228 \u27155 \u36000 \u25812 \u37325 \u65292 \u30333 \u38936 \u26131 \u21371 \u27493  <span class="text-rose-600 font-semibold">-$1,000 ~ -$1,500</span></span>\
+                                    </div>\
+                                </label>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>\
+\
+            <div class="lg:col-span-5 space-y-6">\
+                <div class="bg-gradient-to-br from-navy-900 via-slate-900 to-navy-950 text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden transition-all duration-300 hover:shadow-2xl">\
+                    <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:12px_12px]"></div>\
+                    <div class="relative z-10 space-y-4">\
+                        <span class="text-xs font-bold uppercase tracking-widest text-brand-400"><i class="fa-solid fa-wand-magic-sparkles mr-1 animate-bounce"></i> \uc0\u26411 \u31471 \u31199 \u37329 \u21205 \u24907 \u35430 \u31639 </span>\
+                        <div class="flex justify-between items-baseline border-b border-white/10 pb-4">\
+                            <span class="text-slate-400 text-sm">\uc0\u24314 \u35696 \u25307 \u31199 \u20729 \u26684 \u24118 </span>\
+                            <div class="text-right">\
+                                <span class="text-3xl md:text-4xl font-black text-brand-400 drop-shadow-sm" id="final-rent-range">NT$ 12,800 ~ 13,800</span>\
+                                <span class="text-xs text-slate-400 block mt-1">/ \uc0\u26376  (\u21488 \u21271 \u34507 \u40643 \u22522 \u28310 )</span>\
+                            </div>\
+                        </div>\
+                        \
+                        <div class="space-y-2.5 text-xs">\
+                            <div class="flex justify-between text-slate-300">\
+                                <span>\uc0\u22522 \u30990 \u32026 \u36317 \u21407 \u22987 \u23450 \u20729 \u65306 </span>\
+                                <span id="breakdown-base" class="font-bold">NT$ 12,800</span>\
+                            </div>\
+                            <div class="flex justify-between text-emerald-400">\
+                                <span>\uc0\u29872 \u22659 \u20778 \u21218 \u21152 \u20998 \u21512 \u35336 \u65306 </span>\
+                                <span id="breakdown-adds" class="font-bold">+NT$ 0</span>\
+                            </div>\
+                            <div class="flex justify-between text-rose-400">\
+                                <span>\uc0\u25239 \u24615 \u25239 \u25298 \u28187 \u20998 \u21512 \u35336 \u65306 </span>\
+                                <span id="breakdown-subs" class="font-bold">-NT$ 0</span>\
+                            </div>\
+                            <div class="flex justify-between border-t border-white/5 pt-2.5 text-slate-400">\
+                                <span>\uc0\u29305 \u22823 \u38914 \u32026 \u22871 \u25151 \u28322 \u20729 \u65306 </span>\
+                                <span id="breakdown-suite" class="font-bold text-brand-400">\uc0\u28961 </span>\
+                            </div>\
+                        </div>\
+                        \
+                        <div class="bg-brand-500/10 border border-brand-500/20 p-4 rounded-2xl text-[11px] text-brand-200 leading-relaxed">\
+                            <i class="fa-solid fa-circle-info mr-1"></i>\
+                            <strong>\uc0\u21488 \u21271 \u34507 \u40643 \u21312 \u22522 \u28310 \u65306 </strong> \u25351 \u22823 \u23433 \u12289 \u20449 \u32681 \u12289 \u26494 \u23665 \u12289 \u20013 \u27491 \u12289 \u20013 \u23665 \u31561 \u31934 \u33775 \u21312 \u65292 \u33509 \u22312 \u22806 \u22285 \u21312 \u65288 \u20363 \u22914 \u20839 \u28246 \u12289 \u21335 \u28207 \u12289 \u26032 \u21271 \u31934 \u33775 \u21312 \u65289 \u65292 \u24314 \u35696 \u23559 \u26368 \u32066 \u31199 \u37329 \u19979 \u35519 \u32004  10% ~ 20% \u20316 \u28858 \u23433 \u20840 \u25307 \u31199 \u24118 \u12290 \
+                        </div>\
+                    </div>\
+                </div>\
+\
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 transition duration-300 hover:shadow-md">\
+                    <div class="flex border-b border-slate-100 mb-6">\
+                        <button id="tab-btn-visual" class="flex-1 pb-3 text-sm font-bold text-brand-600 border-b-2 border-brand-600 focus:outline-none transition">\
+                            <i class="fa-solid fa-cube mr-1.5"></i> \uc0\u27604 \u20363 \u23610 \u25836 \u30495 \u30059 \u24067 \
+                        </button>\
+                        <button id="tab-btn-quiz" class="flex-1 pb-3 text-sm font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent focus:outline-none transition">\
+                            <i class="fa-solid fa-graduation-cap mr-1.5"></i> \uc0\u23526 \u25136 \u23567 \u21151 \u35506 \
+                        </button>\
+                    </div>\
+\
+                    <div id="tab-visual" class="space-y-4">\
+                        <div class="text-xs text-slate-500 leading-relaxed flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">\
+                            <span>\uc0\u55357 \u56481  \u32972 \u26223 \u28784 \u33394 \u32178 \u26684 \u27599 \u26684 \u20195 \u34920 \u35611 \u24107  <strong>1 \u27493  (25 \u20844 \u20998 )</strong></span>\
+                            <span class="text-brand-600 font-bold"><i class="fa-regular fa-hand-point-up animate-bounce mr-0.5"></i> \uc0\u24202 \u32068 \u21487 \u33258 \u30001 \u25302 \u26355 \u65281 </span>\
+                        </div>\
+                        \
+                        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-inner relative bg-slate-50 p-4">\
+                            <div class="flex justify-between text-[10px] text-slate-400 mb-2">\
+                                <span>\uc0\u27604 \u20363 \u23610 \u65306 1\u26684  = 25\'d725 cm</span>\
+                                <span id="canvas-info">\uc0\u38617 \u20154 \u33287 \u21934 \u20154 \u24202 \u31034 \u24847  (\u21487 \u25302 \u26355 \u25850 \u25918 )</span>\
+                            </div>\
+                            \
+                            <div class="relative w-full h-72 bg-slate-100 rounded-xl grid-bg overflow-hidden flex items-center justify-center border border-slate-200" id="canvas-container">\
+                                <div id="canvas-room" class="absolute border-4 border-yellow-400 bg-yellow-400/10 rounded-lg transition-all duration-300 flex flex-col items-center justify-center text-center shadow-sm pointer-events-none" style="width: 150px; height: 150px;">\
+                                    <span class="text-[10px] font-black text-yellow-800 bg-white/90 px-2 py-1 rounded shadow-sm" id="canvas-room-label">\
+                                        300\'d7300 cm\
+                                    </span>\
+                                </div>\
+                                \
+                                <div id="canvas-doublebed" class="absolute bg-indigo-500/20 border-2 border-indigo-500 rounded text-indigo-700 text-[10px] font-bold flex flex-col items-center justify-center cursor-move shadow-md select-none touch-none" style="width: 75px; height: 94px; top: 10px; left: 10px; z-index: 10;">\
+                                    <i class="fa-solid fa-bed text-sm mb-1 pointer-events-none"></i>\
+                                    <span class="pointer-events-none">\uc0\u38617 \u20154 \u24202 </span>\
+                                    <span class="text-[8px] opacity-75 pointer-events-none">150\'d7188</span>\
+                                </div>\
+                                \
+                                <div id="canvas-singlebed" class="absolute bg-teal-500/20 border-2 border-teal-500 rounded text-teal-700 text-[10px] font-bold flex flex-col items-center justify-center cursor-move shadow-md select-none touch-none" style="width: 52.5px; height: 94px; bottom: 10px; right: 10px; z-index: 10;">\
+                                    <i class="fa-solid fa-bed text-xs mb-1 pointer-events-none"></i>\
+                                    <span class="pointer-events-none">\uc0\u21934 \u20154 \u24202 </span>\
+                                    <span class="text-[8px] opacity-75 pointer-events-none">105\'d7188</span>\
+                                </div>\
+                            </div>\
+                        </div>\
+                    </div>\
+\
+                    <div id="tab-quiz" class="space-y-4 hidden">\
+                        <p class="text-xs text-slate-500 leading-relaxed bg-brand-50 p-3 rounded-xl border border-brand-100 text-brand-800">\
+                            <i class="fa-solid fa-circle-question mr-1"></i>\
+                            \uc0\u35611 \u24107 \u25361 \u36984 \u20102  3 \u20491 \u30475 \u25151 \u29694 \u22580 \u30340 \u30495 \u23526 \u20491 \u26696 \u65292 \u35531 \u36939 \u29992 \u25152 \u23416 \u30340 \u20272 \u31639 \u37007 \u36655 \u23436 \u25104 \u12300 \u26411 \u31471 \u31199 \u37329 \u35413 \u20272 \u22823 \u25361 \u25136 \u12301 \u21543 \u65281 \
+                        </p>\
+                        <div class="border border-slate-100 bg-slate-50/50 p-4 rounded-2xl relative" id="quiz-card">\
+                            <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">\
+                                <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2.5 py-1 rounded-full" id="quiz-case-title">\uc0\u20491 \u26696  A\u65306 \u20449 \u32681 \u21312 \u38651 \u26799 \u22823 \u27155 </span>\
+                                <span class="text-xs font-bold text-slate-400" id="quiz-index">1 / 3</span>\
+                            </div>\
+                            <div class="space-y-2 mb-4">\
+                                <p class="text-sm font-bold text-slate-800 leading-relaxed" id="quiz-desc">\
+                                    \uc0\u38263 \u23532 \u22823 \u32004  350\'d7400 cm\u65292 \u26377 \u38754 \u24460 \u24055 \u36817 \u36317 \u38626 \u30340 \u25505 \u20809 \u25239 \u24615 \u65292 \u22823 \u27155 \u38468 \u26377 \u38651 \u26799 \u12290 \u36889 \u38291 \u25151 \u38291 \u25033 \u23450 \u20301 \u28858 \u65311 \
+                                </p>\
+                                <div class="flex gap-2 flex-wrap" id="quiz-tags"></div>\
+                            </div>\
+                            <div class="space-y-2.5" id="quiz-options"></div>\
+                            <div id="quiz-feedback" class="mt-4 p-4 rounded-2xl text-xs leading-relaxed hidden shadow-sm transition-all duration-300"></div>\
+                        </div>\
+                        <div class="flex justify-end pt-2">\
+                            <button id="quiz-next-btn" class="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 shadow" disabled>\
+                                <span>\uc0\u19979 \u19968 \u38988 </span> <i class="fa-solid fa-arrow-right"></i>\
+                            </button>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>\
+        </main>\
+\
+        <footer class="bg-slate-900 text-slate-400 py-6 px-6 border-t border-slate-800 text-center text-xs mt-12">\
+            <div class="max-w-7xl mx-auto space-y-2">\
+                <p>\uc0\u12298 \u36984 \u25151 \u25104 \u21151 \u30340 \u38364 \u37749 \u22240 \u32032 \u12299 \u35506 \u31243 \u24037 \u20855 \u31995 \u21015  \'b7 \u25152 \u26377 \u24515 \u27861 \u28304 \u26044 \u35611 \u24107  \u34253 \u22826 \u22826  (Ruby) \u27946 \u24609 \u33459 \u32769 \u24107 \u20849 \u20139 \u29256 \u27402 \u25152 \u26377 </p>\
+                <p class="text-slate-600">\uc0\u26412 \u32178 \u38913 \u30001  AI \u36628 \u21161 \u20778 \u21270 \u35373 \u35336 \u65292 \u26088 \u22312 \u25552 \u20379 \u21512 \u35215 \u30340 \u21253 \u31199 \u20195 \u31649 \u23526 \u21209 \u12289 \u36984 \u25151 \u12289 \u30475 \u25151 \u21450 \u31199 \u37329 \u31934 \u28310 \u35413 \u20272 \u25945 \u23416 \u29992 \u36884 \u12290 </p>\
+            </div>\
+        </footer>\
+    </div>\
+\
+    <script>\
+        // --- \uc0\u30331 \u20837 \u37007 \u36655  ---\
+        const secret = "1234"; // \uc0\u38928 \u35373 \u23494 \u30908  1234\
+        function checkPassword() \{\
+            const pass = document.getElementById('password-input').value;\
+            if (pass === secret || pass === "1234") \{\
+                document.getElementById('login-overlay').style.display = 'none';\
+                document.getElementById('main-content').style.display = 'block';\
+                localStorage.setItem('isLoggedIn', 'true');\
+                // \uc0\u30331 \u20837 \u24460 \u37325 \u32362  Canvas \u23610 \u23544 \
+                calculateRent();\
+            \} else \{\
+                alert('\uc0\u23494 \u30908 \u37679 \u35492 ');\
+            \}\
+        \}\
+        if (localStorage.getItem('isLoggedIn') === 'true') \{\
+            document.getElementById('login-overlay').style.display = 'none';\
+            document.getElementById('main-content').style.display = 'block';\
+        \}\
+\
+        // --- \uc0\u20272 \u31639 \u22120 \u33287 \u30059 \u24067 \u37007 \u36655  ---\
+        const lengthInput = document.getElementById('input-length');\
+        const widthInput = document.getElementById('input-width');\
+        const numLength = document.getElementById('num-length');\
+        const numWidth = document.getElementById('num-width');\
+        const lengthValText = document.getElementById('length-val');\
+        const widthValText = document.getElementById('width-val');\
+        const totalAreaCmText = document.getElementById('total-area-cm');\
+        const totalPingText = document.getElementById('total-ping');\
+        const sizeBadge = document.getElementById('size-badge');\
+        \
+        const modBalcony = document.getElementById('mod-balcony');\
+        const modElevator = document.getElementById('mod-elevator');\
+        const modBath = document.getElementById('mod-bath');\
+        const modRatio = document.getElementById('mod-ratio');\
+        const modBackBalcony = document.getElementById('mod-backbalcony');\
+        const modPoorView = document.getElementById('mod-poorview');\
+        const modInternalWindow = document.getElementById('mod-internalwindow');\
+        const modWalkup = document.getElementById('mod-walkup');\
+        \
+        const finalRentRangeText = document.getElementById('final-rent-range');\
+        const breakdownBaseText = document.getElementById('breakdown-base');\
+        const breakdownAddsText = document.getElementById('breakdown-adds');\
+        const breakdownSubsText = document.getElementById('breakdown-subs');\
+        const breakdownSuiteText = document.getElementById('breakdown-suite');\
+        \
+        const canvasRoom = document.getElementById('canvas-room');\
+        const canvasRoomLabel = document.getElementById('canvas-room-label');\
+        const canvasContainer = document.getElementById('canvas-container');\
+        \
+        function calculateRent() \{\
+            const length = parseFloat(lengthInput.value) || 0;\
+            const width = parseFloat(widthInput.value) || 0;\
+            const areaCm2 = length * width;\
+            const pings = (areaCm2 / 33057.85).toFixed(2);\
+            \
+            totalAreaCmText.textContent = `$\{areaCm2.toLocaleString()\} cm\'b2`;\
+            totalPingText.textContent = `$\{pings\} \uc0\u22378 `;\
+            \
+            let basePrice = 12800;\
+            let sizeCategory = '\uc0\u23567 \u25151 \u38291 ';\
+            sizeBadge.className = 'inline-block text-xs font-bold px-2.5 py-1 rounded-full mt-0.5';\
+            \
+            if (areaCm2 < 100000) \{ \
+                basePrice = 12800;\
+                sizeCategory = '\uc0\u23567 \u25151 \u38291 ';\
+                sizeBadge.classList.add('bg-blue-100', 'text-blue-700');\
+            \} else if (areaCm2 >= 100000 && areaCm2 < 140000) \{\
+                basePrice = 13800;\
+                sizeCategory = '\uc0\u20013 \u25151 \u38291 ';\
+                sizeBadge.classList.add('bg-teal-100', 'text-teal-700');\
+            \} else \{ \
+                basePrice = 14800;\
+                sizeCategory = '\uc0\u22823 \u25151 \u38291 ';\
+                sizeBadge.classList.add('bg-emerald-100', 'text-emerald-700');\
+            \}\
+            sizeBadge.textContent = sizeCategory;\
+            breakdownBaseText.textContent = `NT$ $\{basePrice.toLocaleString()\}`;\
+            \
+            let positiveAdds = 0;\
+            if (modBalcony.checked) positiveAdds += 800;       \
+            if (modElevator.checked) positiveAdds += 800;      \
+            if (modBath.checked) positiveAdds += 2500;         \
+            if (modRatio.checked) positiveAdds += 500;         \
+            breakdownAddsText.textContent = `+NT$ $\{positiveAdds.toLocaleString()\}`;\
+            \
+            let negativeSubs = 0;\
+            if (modBackBalcony.checked) negativeSubs += 800;    \
+            if (modPoorView.checked) negativeSubs += 800;        \
+            if (modInternalWindow.checked) negativeSubs += 1800; \
+            if (modWalkup.checked) negativeSubs += 1200;         \
+            breakdownSubsText.textContent = `-NT$ $\{negativeSubs.toLocaleString()\}`;\
+            \
+            let isSuiteBig = false;\
+            if (modBath.checked && sizeCategory === '\uc0\u22823 \u25151 \u38291 ') \{\
+                isSuiteBig = true;\
+                breakdownSuiteText.textContent = '\uc0\u31526 \u21512  (16,800 \u20803 \u20197 \u19978 )';\
+                breakdownSuiteText.className = 'font-bold text-brand-500';\
+            \} else \{\
+                breakdownSuiteText.textContent = '\uc0\u28961 ';\
+                breakdownSuiteText.className = 'font-bold text-slate-400';\
+            \}\
+            \
+            let finalLower = basePrice + positiveAdds - negativeSubs;\
+            let finalUpper = finalLower + 1000;\
+            \
+            if (isSuiteBig && finalLower < 16800) \{\
+                finalLower = 16800;\
+                finalUpper = 17800;\
+            \}\
+            if (finalLower < 5000) finalLower = 5000;\
+            if (finalUpper < 6000) finalUpper = 6000;\
+            \
+            finalRentRangeText.textContent = `NT$ $\{finalLower.toLocaleString()\} ~ $\{finalUpper.toLocaleString()\}`;\
+            updateCanvasDimensions(length, width);\
+        \}\
+        \
+        function updateCanvasDimensions(length, width) \{\
+            if(!canvasContainer) return;\
+            const maxCm = 600; \
+            const containerWidth = canvasContainer.clientWidth - 40; \
+            const containerHeight = canvasContainer.clientHeight - 40;\
+            if(containerWidth <= 0) return; // Prevent zero division when hidden\
+            \
+            const scaleX = containerWidth / maxCm;\
+            const scaleY = containerHeight / maxCm;\
+            const scale = Math.min(scaleX, scaleY);\
+            \
+            canvasRoom.style.width = `$\{width * scale\}px`;\
+            canvasRoom.style.height = `$\{length * scale\}px`;\
+            canvasRoomLabel.innerHTML = `$\{width\}\'d7$\{length\} cm<br><span class="text-[8px] font-medium text-slate-500">($\{ ( (length*width) / 33057.85 ).toFixed(2) \} \uc0\u22378 )</span>`;\
+            \
+            document.getElementById('canvas-doublebed').style.width = `$\{150 * scale\}px`;\
+            document.getElementById('canvas-doublebed').style.height = `$\{188 * scale\}px`;\
+            document.getElementById('canvas-singlebed').style.width = `$\{105 * scale\}px`;\
+            document.getElementById('canvas-singlebed').style.height = `$\{188 * scale\}px`;\
+        \}\
+        \
+        function syncInputs(e) \{\
+            const val = e.target.value;\
+            if (e.target.id === 'input-length' || e.target.id === 'num-length') \{\
+                lengthInput.value = val;\
+                numLength.value = val;\
+                lengthValText.textContent = `$\{val\} cm`;\
+            \} else if (e.target.id === 'input-width' || e.target.id === 'num-width') \{\
+                widthInput.value = val;\
+                numWidth.value = val;\
+                widthValText.textContent = `$\{val\} cm`;\
+            \}\
+            calculateRent();\
+        \}\
+        \
+        [lengthInput, widthInput, numLength, numWidth].forEach(el => \{ el.addEventListener('input', syncInputs); \});\
+        [modBalcony, modElevator, modBath, modRatio, modBackBalcony, modPoorView, modInternalWindow, modWalkup].forEach(chk => \{ chk.addEventListener('change', calculateRent); \});\
+        \
+        const tabBtnVisual = document.getElementById('tab-btn-visual');\
+        const tabBtnQuiz = document.getElementById('tab-btn-quiz');\
+        const tabVisual = document.getElementById('tab-visual');\
+        const tabQuiz = document.getElementById('tab-quiz');\
+        \
+        tabBtnVisual.addEventListener('click', () => \{\
+            tabBtnVisual.className = 'flex-1 pb-3 text-sm font-bold text-brand-600 border-b-2 border-brand-600 focus:outline-none transition';\
+            tabBtnQuiz.className = 'flex-1 pb-3 text-sm font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent focus:outline-none transition';\
+            tabVisual.classList.remove('hidden');\
+            tabQuiz.classList.add('hidden');\
+            calculateRent(); // Recalculate to fix layout\
+        \});\
+        \
+        tabBtnQuiz.addEventListener('click', () => \{\
+            tabBtnQuiz.className = 'flex-1 pb-3 text-sm font-bold text-brand-600 border-b-2 border-brand-600 focus:outline-none transition';\
+            tabBtnVisual.className = 'flex-1 pb-3 text-sm font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent focus:outline-none transition';\
+            tabQuiz.classList.remove('hidden');\
+            tabVisual.classList.add('hidden');\
+        \});\
+        \
+        function initDraggable(el) \{\
+            let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;\
+            el.addEventListener("mousedown", dragStart, false);\
+            document.addEventListener("mouseup", dragEnd, false);\
+            document.addEventListener("mousemove", drag, false);\
+            el.addEventListener("touchstart", dragStart, \{passive: false\});\
+            document.addEventListener("touchend", dragEnd, \{passive: false\});\
+            document.addEventListener("touchmove", drag, \{passive: false\});\
+            \
+            function dragStart(e) \{\
+                if (e.type === "touchstart") \{ initialX = e.touches[0].clientX - xOffset; initialY = e.touches[0].clientY - yOffset; \} \
+                else \{ initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; \}\
+                if (e.target === el) active = true;\
+            \}\
+            function dragEnd() \{ initialX = currentX; initialY = currentY; active = false; \}\
+            function drag(e) \{\
+                if (active) \{\
+                    e.preventDefault();\
+                    if (e.type === "touchmove") \{ currentX = e.touches[0].clientX - initialX; currentY = e.touches[0].clientY - initialY; \} \
+                    else \{ currentX = e.clientX - initialX; currentY = e.clientY - initialY; \}\
+                    xOffset = currentX; yOffset = currentY;\
+                    el.style.transform = `translate3d($\{currentX\}px, $\{currentY\}px, 0)`;\
+                \}\
+            \}\
+        \}\
+        initDraggable(document.getElementById('canvas-doublebed'));\
+        initDraggable(document.getElementById('canvas-singlebed'));\
+        \
+        // Quiz Data\
+        const quizDatabase = [\
+            \{ caseTitle: "\uc0\u20491 \u26696  A\u65306 \u20449 \u32681 \u21312 \u38651 \u26799 \u22823 \u27155  (\u22823 \u25151 \u38291 )", desc: "\u38263 \u23532 \u22823 \u32004  350\'d7400 cm\u65292 \u26377 \u38754 \u24460 \u24055 \u36817 \u36317 \u38626 \u30340 \u25505 \u20809 \u25239 \u24615 \u65292 \u22823 \u27155 \u38468 \u26377 \u38651 \u26799 \u12290 \u36889 \u38291 \u25151 \u38291 \u25033 \u23450 \u20301 \u28858 \u65311 ", options: ["\u22823 \u25151 \u22522 \u28310  $14,800 + \u38651 \u26799 \u21152 \u20729  800 - \u25505 \u20809 \u25239 \u24615  800 = 14,800 \u20803 ", "\u22823 \u25151 \u22522 \u28310  $14,800 + \u38651 \u26799 \u21152 \u20729  800 - \u25505 \u20809 \u25239 \u24615  1,800 = 13,800 \u20803 ", "\u22823 \u25151 \u30452 \u25509 \u25171 \u20843 \u25240 \u65292 \u19981 \u32771 \u24942 \u38651 \u26799 \u31561 \u21152 \u20998 \u38917 \u65292 \u30452 \u25509 \u31199  11,800 \u20803 "], correctIdx: 0, tags: ["\u32004  4.2 \u22378  (\u22823 \u25151 \u38291 )", "\u26377 \u38651 \u26799  (+$800)", "\u37168 \u26847 \u36817 /\u25505 \u20809 \u24046  (-$800)"], explanation: "\u31572 \u26696 \u36984  (1)\u12290 \u22823 \u25151 \u22522 \u28310  $14,800\u12290 \u38651 \u26799 (+$800)\u65292 \u25505 \u20809 \u24046 (-$800)\u20114 \u28858 \u25269 \u28040 \u65292 \u26411 \u31471 \u31199 \u37329 \u32173 \u25345 \u22312  $14,800 \u24038 \u21491 \u12290 " \},\
+            \{ caseTitle: "\uc0\u20491 \u26696  B\u65306 \u20013 \u23665 \u21312 \u32769 \u20844 \u23507 4\u27155  (\u20013 \u25151 \u38291 )", desc: "\u25151 \u38291 \u38263 \u23532 \u32004  300\'d7420 cm\u65292 \u28961 \u38651 \u26799 \u30340 \u23526 \u39636 4\u27155 \u12290 \u28961 \u38525 \u21488 \u12289 \u23565 \u22806 \u25505 \u20809 \u26222 \u36890 \u12290 \u22914 \u20309 \u23450 \u20729 \u65311 ", options: ["\u20013 \u25151 \u22522 \u28310  $13,800\u65292 \u22240 \u27794 \u26377 \u22823 \u32570 \u40670 \u65292 \u22240 \u27492 \u21487 \u20197 \u24375 \u35373 \u23450 \u22312  13,800 \u20803 ", "\u20013 \u25151 \u22522 \u28310  $13,800\u65292 \u29228 4\u27155 \u38750 \u26997 \u38480 \u65292 \u30053 \u24494 \u25240 \u20729 \u23450 \u22312  13,300 ~ 13,800 \u20803 ", "\u20013 \u25151 \u22522 \u28310  $13,800\u65292 \u39640 \u27155 \u23652 \u20844 \u23507 \u30452 \u25509 \u25187 \u38500  20% \u34892 \u24773 \u23450 \u22312  11,000 \u20803 "], correctIdx: 1, tags: ["\u32004  3.8 \u22378  (\u20013 \u25151 \u38291 )", "\u28961 \u38525 \u21488 \u38651 \u26799 ", "4\u27155 \u20844 \u23507 \u26799 \u38291 \u20094 \u28136 "], explanation: "\u31572 \u26696 \u36984  (2)\u12290 \u20013 \u25151 \u22411 \u22522 \u28310  $13,800\u12290 4\u27155 \u30053 \u24494 \u25240 \u28187 \u32004  500 \u20803 \u21363 \u21487 \u65292 \u23450 \u20729 \u22312  $13,300 ~ 13,800 \u20043 \u38291 \u26368 \u20339 \u12290 " \},\
+            \{ caseTitle: "\uc0\u20491 \u26696  C\u65306 \u22823 \u23433 \u21312 \u38914 \u32026 \u22823 \u22871 \u25151  (\u36229 \u22823 \u31354 \u38291 )", desc: "\u38263 \u23532  400\'d7400 cm\u65292 \u20839 \u21547 \u29544 \u31435 \u20840 \u22871 \u34907 \u28020 \u12289 \u19988 \u25793 \u26377 \u22823 \u38651 \u26799 \u33287 \u25505 \u20809 \u26997 \u20339 \u30340 \u29544 \u31435 \u26223 \u35264 \u38525 \u21488 \u12290 ", options: ["\u22823 \u25151 \u22522 \u28310  $14,800 + \u34907 \u28020  2,500 + \u38651 \u26799  800 + \u38525 \u21488  800 = 18,900 \u20803 ", "\u22823 \u25151 \u22522 \u28310  $14,800 + \u38525 \u21488  500 = 15,300 \u20803  \u24038 \u21491 \u65292 \u34907 \u28020 \u28961 \u27861 \u25289 \u39640 \u23450 \u20729 ", "\u28961 \u35542 \u22823 \u23567 \u65292 \u20849 \u29983 \u20844 \u23507 \u30340 \u26368 \u39640 \u22825 \u33457 \u26495 \u23450 \u20729 \u30342 \u19981 \u25033 \u36229 \u36942  14,800 \u20803 "], correctIdx: 0, tags: ["\u32004  4.8 \u22378  (\u22823 \u25151 \u38291 )", "\u29544 \u31435 \u34907 \u28020  (+$2,500)", "\u38651 \u26799 \u33775 \u24264  (+$800)", "\u29544 \u31435 \u38525 \u21488  (+$800)"], explanation: "\u31572 \u26696 \u36984  (1)\u12290 \u38468 \u29544 \u31435 \u34907 \u28020 \u21487 \u22686 \u21152  $2,500 \u28322 \u20729 \u65292 \u34701 \u21512 \u38525 \u21488 \u33287 \u38651 \u26799 \u65292 \u22312 \u31934 \u33775 \u21312 \u23436 \u20840 \u21487 \u20197 \u25361 \u25136  $18,900 \u30340 \u26376 \u31199 \u65281 " \}\
+        ];\
+        \
+        let activeQuizIdx = 0, isQuestionAnswered = false;\
+        const quizCaseTitle = document.getElementById('quiz-case-title'), quizIndex = document.getElementById('quiz-index'), quizDesc = document.getElementById('quiz-desc'), quizOptions = document.getElementById('quiz-options'), quizFeedback = document.getElementById('quiz-feedback'), quizNextBtn = document.getElementById('quiz-next-btn'), quizTags = document.getElementById('quiz-tags');\
+        \
+        function renderQuiz() \{\
+            const data = quizDatabase[activeQuizIdx];\
+            quizCaseTitle.textContent = data.caseTitle; quizIndex.textContent = `$\{activeQuizIdx + 1\} / $\{quizDatabase.length\}`; quizDesc.textContent = data.desc;\
+            quizTags.innerHTML = '';\
+            data.tags.forEach(tag => \{\
+                const isNegative = tag.includes('-') || tag.includes('\uc0\u24046 ');\
+                const badge = document.createElement('span');\
+                badge.className = `border px-2.5 py-1 rounded-lg text-[10px] font-semibold $\{isNegative ? 'bg-rose-50 border-rose-100 text-rose-500' : 'bg-slate-50 border-slate-200 text-slate-600'\}`;\
+                badge.innerHTML = tag; quizTags.appendChild(badge);\
+            \});\
+            quizOptions.innerHTML = '';\
+            data.options.forEach((opt, idx) => \{\
+                const optBtn = document.createElement('button');\
+                optBtn.className = "w-full text-left p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-brand-500 hover:bg-brand-50/20 text-xs font-semibold text-slate-700 transition flex justify-between items-center group shadow-sm";\
+                optBtn.innerHTML = `<span>$\{opt\}</span><i class="fa-solid fa-circle-chevron-right text-slate-300 group-hover:text-brand-500 transition"></i>`;\
+                optBtn.onclick = () => selectQuizAnswer(idx); quizOptions.appendChild(optBtn);\
+            \});\
+            quizFeedback.classList.add('hidden'); quizNextBtn.disabled = true; isQuestionAnswered = false;\
+        \}\
+        \
+        function selectQuizAnswer(selectedIdx) \{\
+            if (isQuestionAnswered) return;\
+            isQuestionAnswered = true;\
+            const data = quizDatabase[activeQuizIdx], buttons = quizOptions.querySelectorAll('button');\
+            buttons.forEach((btn, idx) => \{\
+                btn.disabled = true;\
+                if (idx === data.correctIdx) \{\
+                    btn.className = "w-full text-left p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-500 text-xs font-bold text-emerald-800 transition flex justify-between items-center shadow-inner";\
+                    btn.innerHTML = `<span>$\{data.options[idx]\}</span><i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i>`;\
+                \} else if (idx === selectedIdx) \{\
+                    btn.className = "w-full text-left p-3.5 rounded-2xl bg-rose-50 border-2 border-rose-500 text-xs font-bold text-rose-800 transition flex justify-between items-center shadow-inner";\
+                    btn.innerHTML = `<span>$\{data.options[idx]\}</span><i class="fa-solid fa-circle-xmark text-rose-600 text-lg"></i>`;\
+                \} else \{\
+                    btn.className = "w-full text-left p-3.5 rounded-2xl bg-slate-100 border border-slate-200 text-xs text-slate-400 cursor-not-allowed transition flex justify-between items-center";\
+                    btn.innerHTML = `<span>$\{data.options[idx]\}</span>`;\
+                \}\
+            \});\
+            quizFeedback.classList.remove('hidden');\
+            if (selectedIdx === data.correctIdx) \{\
+                quizFeedback.className = "mt-4 p-4 rounded-2xl text-xs leading-relaxed bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-sm";\
+                quizFeedback.innerHTML = `<strong>\uc0\u22826 \u24375 \u20102 \u65281 \u23436 \u20840 \u27491 \u30906 \u65281 </strong><br>$\{data.explanation\}`;\
+            \} else \{\
+                quizFeedback.className = "mt-4 p-4 rounded-2xl text-xs leading-relaxed bg-amber-50 border border-amber-200 text-amber-800 shadow-sm";\
+                quizFeedback.innerHTML = `<strong>\uc0\u21710 \u21568 \u65292 \u31572 \u26696 \u26377 \u20123 \u24494 \u24046 \u36317 \u65281 </strong><br>$\{data.explanation\}`;\
+            \}\
+            quizNextBtn.disabled = false;\
+        \}\
+        \
+        quizNextBtn.addEventListener('click', () => \{\
+            activeQuizIdx++;\
+            if (activeQuizIdx < quizDatabase.length) \{ renderQuiz(); \} else \{\
+                quizCaseTitle.textContent = "\uc0\u55356 \u57225  \u24685 \u21916 \u23436 \u25104 \u23526 \u25136 \u25361 \u25136 \u65281 "; quizIndex.textContent = "\u10003  \u23436 \u20462 "; quizTags.innerHTML = '';\
+                quizDesc.innerHTML = `<div class="text-center py-6"><p class="text-sm font-bold text-slate-700 leading-relaxed">\uc0\u9989  \u25484 \u25569 \u29694 \u22580 \u24555 \u36895 \u19976 \u37327 <br>\u9989  \u25484 \u25569 \u22522 \u30990 \u34892 \u24773 \u20844 \u24335 <br>\u9989  \u25484 \u25569 \u21152 \u20729 \u33287 \u25240 \u28187 \u24515 \u27861 </p></div>`;\
+                quizOptions.innerHTML = ''; quizFeedback.classList.add('hidden');\
+                quizNextBtn.textContent = "\uc0\u37325 \u26032 \u38283 \u22987  \u55357 \u56580 ";\
+                quizNextBtn.onclick = () => \{ activeQuizIdx = 0; quizNextBtn.textContent = "\uc0\u19979 \u19968 \u38988 "; quizNextBtn.onclick = null; renderQuiz(); \};\
+            \}\
+        \});\
+        \
+        window.onload = function() \{ calculateRent(); renderQuiz(); window.addEventListener('resize', () => \{ calculateRent(); \}); \};\
+    </script>\
+</body>\
+</html>}
