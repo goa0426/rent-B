@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>末端租金精準估算與實戰練習室</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         #login-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #0f172a; }
+        .grid-bg { background-size: 20px 20px; background-image: linear-gradient(to right, rgba(148, 163, 184, 0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(148, 163, 184, 0.15) 1px, transparent 1px); }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
     <div id="login-overlay">
         <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center">
             <h2 class="text-xl font-bold mb-4">請輸入進入密碼</h2>
@@ -22,7 +25,7 @@
         </div>
 
     <script>
-        const secret = "1234"; // 您可以在這裡修改密碼
+        const secret = "1234"; // 修改密碼請改這裡
         function checkPassword() {
             if (document.getElementById('password-input').value === secret) {
                 document.getElementById('login-overlay').style.display = 'none';
